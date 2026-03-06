@@ -1,8 +1,3 @@
-"""
-tasks.py – Pure business-logic functions for task operations.
-All functions receive the task list and return (updated_list, message).
-None is returned as the list on failure so callers can detect errors.
-"""
 
 from __future__ import annotations
 
