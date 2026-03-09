@@ -51,7 +51,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     # update
     update_p = sub.add_parser("update", help="Update a task")
-    update_p.add_argument("--id", required=True, type=int, help="Task ID")
+    id_group = update_p.add_mutually_exclusive_group(required=True)
+    id_group.add_argument("--id", type=int, help="Task ID")
+    id_group.add_argument("--find-title", metavar="TITLE", dest="find_title",
+                          help="Locate task by its current title")
     update_p.add_argument("--title", help="New title")
     update_p.add_argument("--desc", help="New description")
     update_p.add_argument(
@@ -114,10 +117,12 @@ def main():
             print("⚠️  No fields to update. Provide --title, --desc, or --priority.")
             sys.exit(1)
 
-        tasks, msg = update_task(tasks, args.id, updates)
+        identifier = args.id if args.id is not None else args.find_title
+        tasks, msg = update_task(tasks, identifier, updates)
         if tasks is not None:
             save_tasks(tasks)
-            logger.info("Task updated: ID=%d fields=%s", args.id, list(updates.keys()))
+            id_info = f"ID={args.id}" if args.id is not None else f"title='{args.find_title}'"
+            logger.info("Task updated: %s fields=%s", id_info, list(updates.keys()))
             print(f"✅ {msg}")
         else:
             print(f"❌ {msg}")
